@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "neo-echoset"
+version = "0.1.0"
+description = "tools & scripts for neo-echoset and dataloaders for pytorch"
+authors = ["satchel french"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "neo_echoset"}]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+wget = "^3.2"
+tqdm = "^4.66.1"
+Pillow = "^10.0.1"
+numpy = "^1.26.0"
+torch = "^2.0.1"
+torchvision = "^0.15.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
