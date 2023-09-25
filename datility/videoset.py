@@ -83,7 +83,7 @@ class VideoDatasetBuilder(DatasetBuilder):
         
         stream.release()
  
-        annotation = os.path.relpath(vid_dir_path, self.out_path) + " " + str(0) + " " + str(int(frame_idx-1)) + " " + str(self._get_class(label))
+        annotation = os.path.relpath(vid_dir_path, self.out_path) + " " + str(1) + " " + str(int(frame_idx-1)) + " " + str(self._get_class(label))
         self._write_to_annotation(self.out_path, annotation)
  
     ''' 
@@ -98,10 +98,10 @@ class VideoDatasetBuilder(DatasetBuilder):
         subprocess.run(["ffmpeg", "-r", str(1), "-i", vid_file_path, "-r", str(1), frame_path, "-threads", str(4), '-loglevel', 'quiet'])
 
         # count frames in video directory
-        num_of_frames = len(list(filter(lambda x: os.path.isfile(x), os.listdir(vid_dir_path))))
+        num_of_frames = len(os.listdir(vid_dir_path))
 
         # write to annotation    
-        annotation = os.path.relpath(vid_dir_path, self.out_path) + " " + str(0) + " " + str(num_of_frames-1) + " " + str(self._get_class(label))
+        annotation = os.path.relpath(vid_dir_path, self.out_path) + " " + str(1) + " " + str(num_of_frames) + " " + str(self._get_class(label))
         self._write_to_annotation(self.out_path, annotation)
 
 
