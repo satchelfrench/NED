@@ -29,6 +29,7 @@ class DatasetBuilder(ABC):
         
         return cls.classes[label]
 
+    # should be inverted
     def _get_class_map(self):
         return self.classes
 

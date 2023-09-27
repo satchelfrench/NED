@@ -1,7 +1,7 @@
 # image flowset
 # raw optical flow data as tensor (not visualized)
 # added dimension to image and saved as tensor
-# options
+#
 
 import os
 import argparse

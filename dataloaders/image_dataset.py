@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from torchvision.io import read_image
+from torch.utils.data import Dataset
 import pickle
 
 '''
@@ -24,17 +25,17 @@ class FrameDataset(Dataset):
         with open(annotations_file, 'r') as annotations:
             video_samples = annotations.readlines()
 
-            for video_sample in video_samples:
-                parsed = video_sample.split()
+        for video_sample in video_samples:
+            parsed = video_sample.split()
 
-                video_path = os.path.join(self.root_dir, parsed[0])
-                for frame_path in os.listdir(video_path):
-                    self.data.append(
-                        tuple(
-                            os.path.join(video_path, frame_path),
-                            parsed[-1]
-                        )
-                    )
+            video_path = os.path.join(self.root_dir, parsed[0])
+            for frame_path in os.listdir(video_path):
+                self.data.append(
+                    tuple([
+                        os.path.join(video_path, frame_path),
+                        parsed[-1]
+                    ])
+                )
 
     def __len__(self):
         return len(self.data)
