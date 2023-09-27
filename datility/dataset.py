@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import os
+import copy
 
 class DatasetBuilder(ABC):
 
@@ -23,10 +24,10 @@ class DatasetBuilder(ABC):
     
     @classmethod
     def _get_class(cls, label: str):
-        if not cls.classes.get(label):
+        if cls.classes.get(label) is None:
             cls.classes[label] = cls.id_count
             cls.id_count += 1
-        
+   
         return cls.classes[label]
 
     # should be inverted
