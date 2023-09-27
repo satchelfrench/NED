@@ -33,7 +33,7 @@ class FrameDataset(Dataset):
                 self.data.append(
                     tuple([
                         os.path.join(video_path, frame_path),
-                        parsed[-1]
+                        int(parsed[-1])
                     ])
                 )
 
@@ -69,7 +69,7 @@ class TensorFrameDataset(Dataset):
                     self.data.append(
                         tuple(
                             os.path.join(video_path, frame_path),
-                            parsed[-1]
+                            int(parsed[-1])
                         )
                     )
 
