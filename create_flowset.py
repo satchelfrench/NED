@@ -1,27 +1,7 @@
-# image flowset
-# raw optical flow data as tensor (not visualized)
-# added dimension to image and saved as tensor
-#
-
 import os
 import argparse
-import numpy as np
-import cv2
+from datility.utils import calc_optical_flow_dense, flow_to_rgb
 
-def calc_optical_flow_dense(prior, current):
-    frame1 = cv2.cvtColor(prior, cv2.COLOR_BGR2GRAY)
-    frame2 = cv2.cvtColor(current, cv2.COLOR_BGR2GRAY)
-
-    hsv = np.zeros_like(prior)
-    hsv[..., 1] = 255
-
-    flow = cv2.calcOpticalFlowFarneback(frame1, frame2, None, 0.5, 3, 15, 3, 5, 1.2, 0)
-    mag, ang = cv2.cartToPolar(flow[...,0], flow[..., 1])
-    hsv[..., 0] = ang * 180 / np.pi / 2
-    hsv[..., 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
-    rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
-
-    return rgb
 
 if __name__ == '__main__':
 
@@ -75,13 +55,14 @@ if __name__ == '__main__':
             current_frame = cv2.imread(frame_path, cv2.IMREAD_COLOR)
 
             flow = calc_optical_flow_dense(last_frame, current_frame)
+            flow_rgb = flow_to_rgb(flow)
             last_frame = current_frame
 
             # Save flow image to output directory..
             flow_name = "flow_{0:05d}.jpg".format(int(i))
             save_path = os.path.join(out_path, flow_name)
             print(f"saving to {save_path}")
-            cv2.imwrite(save_path, flow)
+            cv2.imwrite(save_path, flow_rgb)
             
 
 
