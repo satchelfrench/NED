@@ -2,7 +2,7 @@
 import subprocess
 import importlib.util
 import numpy as np
-import cv2
+import cv2 # check first..
 
 def _check_and_install(name: str) -> bool:
     spec = importlib.util.find_spec(name)

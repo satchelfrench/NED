@@ -16,7 +16,7 @@ numpy = "^1.26.0"
 torch = "^2.0.1"
 torchvision = "^0.15.2"
 pandas = "^2.1.0"
-
+opencv-python = "^4.8.1.78"
 
 [build-system]
 requires = ["poetry-core"]
