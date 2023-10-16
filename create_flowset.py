@@ -1,7 +1,7 @@
 import os
 import argparse
 from datility.utils import calc_optical_flow_dense, flow_to_rgb
-
+import numpy as np
 
 if __name__ == '__main__':
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
             current_frame = cv2.imread(frame_path, cv2.IMREAD_COLOR)
 
             flow = calc_optical_flow_dense(last_frame, current_frame)
-            flow_rgb = flow_to_rgb(flow)
+            flow_rgb = flow_to_rgb(np.shape(current_frame), flow)
             last_frame = current_frame
 
             # Save flow image to output directory..

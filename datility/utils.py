@@ -19,8 +19,8 @@ def calc_optical_flow_dense(prior, current):
     flow = cv2.calcOpticalFlowFarneback(frame1, frame2, None, 0.5, 3, 15, 3, 5, 1.2, 0)
     return flow
 
-def flow_to_rgb(flow):
-    hsv = np.zeros_like(prior)
+def flow_to_rgb(shape, flow):
+    hsv = np.zeros(shape)
     hsv[..., 1] = 255
 
     mag, ang = cv2.cartToPolar(flow[...,0], flow[..., 1])

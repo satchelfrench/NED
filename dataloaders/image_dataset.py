@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from torchvision.io import read_image
 from torch.utils.data import Dataset
-from datility.utils import calc_optical_flow_dense
+from neo_echoset.datility.utils import calc_optical_flow_dense
 import torchvision.transforms.functional as TF
 import torch
 import pickle
@@ -143,14 +143,14 @@ class OpticalFlowDataset(Dataset):
         images, label = self.data[idx]
         frame_1_path, frame_2_path = images
 
-        frame1 =cv2.imread(frame_1_path, cv2.IMREAD_COLOR)
-        frame2 =cv2.imread(frame_2_path, cv2.IMREAD_COLOR)
+        frame1 = cv2.imread(frame_1_path, cv2.IMREAD_COLOR)
+        frame2 = cv2.imread(frame_2_path, cv2.IMREAD_COLOR)
 
         # now calculate optical flow
         flow = torch.from_numpy(calc_optical_flow_dense(frame1, frame2))
-        frame2 = TF.to_tensor(cv2.cvtColor(frame2, cv2.COLOR_BGR2RGB))
+        frame2 = TF.to_tensor(cv2.cvtColor(frame2, cv2.IMREAD_GRAYSCALE))
 
-        output = torch.stack((frame2[0], frame2[1], frame2[2], flow), 0)
+        output = torch.stack((frame2[0], flow[...,0], flow[...,1]), 0)
  
         if self.transform:
             output = self.transform(output)
