@@ -148,6 +148,7 @@ class OpticalFlowDataset(Dataset):
         # augmentations not recommended as they will be cached and returned with 100% chance
         # if using with torch augmentations, turn off cache
         # Best way to handle augmentations for this dataset is technically with offline augmentations 
+        # suboptimal for now, recommend using alternate opticalflow calculation and avoid numpy<->tensor
         
         if self.cache_enabled and idx in self.cache:
             output, label = self.cache[idx]
@@ -163,8 +164,8 @@ class OpticalFlowDataset(Dataset):
             
             # perform transform and then convert back to numpy
             if self.transform:
-                frame1 = self.transform(frame1)
-                frame2 = self.transform(frame2)
+                frame1 = torch.from_numpy(self.transform(TF.to_tensor(frame1)))
+                frame2 = torch.from_numpy(self.transform(TF.to_tensor(frame2)))
             
             # now calculate optical flow
             # flow = torch.from_numpy(calc_optical_flow_dense(frame1, frame2))
