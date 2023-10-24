@@ -6,6 +6,7 @@ from neo_echoset.datility.utils import calc_optical_flow_dense
 import torchvision.transforms.functional as TF
 import torch
 import pickle
+import shelve
 import cv2
 
 
@@ -110,11 +111,13 @@ Experimental:
 - Cache
 '''   
 class OpticalFlowDataset(Dataset):
-    def __init__(self, annotations_file, root_dir, transform=None, target_transform=None):
+    def __init__(self, annotations_file, root_dir, transform=None, target_transform=None, cache_enabled=True):
         self.root_dir = root_dir
         self.transform = transform
         self.target_transform = target_transform
         self.data = []
+        self.cache_enabled = cache_enabled
+        self.cache = shelve.open("of_dataset_cache.shelve")
 
         with open(annotations_file, 'r') as annotations:
             video_samples = annotations.readlines()
@@ -140,21 +143,41 @@ class OpticalFlowDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        images, label = self.data[idx]
-        frame_1_path, frame_2_path = images
 
-        frame1 = cv2.imread(frame_1_path, cv2.IMREAD_COLOR)
-        frame2 = cv2.imread(frame_2_path, cv2.IMREAD_COLOR)
+        # transforms must be applied first
+        # augmentations not recommended as they will be cached and returned with 100% chance
+        # if using with torch augmentations, turn off cache
+        # Best way to handle augmentations for this dataset is technically with offline augmentations 
+        
+        if self.cache_enabled and idx in self.cache:
+            output, label = self.cache[idx]
+        else:
+            images, label = self.data[idx]
+            frame_1_path, frame_2_path = images
 
-        # now calculate optical flow
-        flow = torch.from_numpy(calc_optical_flow_dense(frame1, frame2))
-        frame2 = TF.to_tensor(cv2.cvtColor(frame2, cv2.IMREAD_GRAYSCALE))
+            frame1 = cv2.imread(frame_1_path, cv2.IMREAD_COLOR)
+            frame2 = cv2.imread(frame_2_path, cv2.IMREAD_COLOR)
 
-        output = torch.stack((frame2[0], flow[...,0], flow[...,1]), 0)
- 
-        if self.transform:
-            output = self.transform(output)
+            frame1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
+            frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
+            
+            # perform transform and then convert back to numpy
+            if self.transform:
+                frame1 = self.transform(frame1)
+                frame2 = self.transform(frame2)
+            
+            # now calculate optical flow
+            # flow = torch.from_numpy(calc_optical_flow_dense(frame1, frame2))
+            flow = torch.from_numpy(cv2.calcOpticalFlowFarneback(frame1, frame2, None, 0.5, 3, 15, 3, 5, 1.2, 0))
+            frame2 = TF.to_tensor(cv2.cvtColor(frame2, cv2.IMREAD_GRAYSCALE))
+
+            output = torch.stack((frame2[0], flow[...,0], flow[...,1]), 0)
+            
+            if self.cache_enabled:
+                self.cache[idx] = (output, label)
+
         if self.target_transform:
             label = self.target_transform(label)
+
         return output, label
     
