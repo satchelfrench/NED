@@ -143,15 +143,17 @@ class OpticalFlowDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-
+        idx_utf = str(idx)
         # transforms must be applied first
         # augmentations not recommended as they will be cached and returned with 100% chance
         # if using with torch augmentations, turn off cache
         # Best way to handle augmentations for this dataset is technically with offline augmentations 
         # suboptimal for now, recommend using alternate opticalflow calculation and avoid numpy<->tensor
+        # consider simply normalizing optical flow maps against image dimensions and into range -1,1 or -255 to 255
+        # caould also combine x and y maps into a single feature with e, and
         
-        if self.cache_enabled and idx in self.cache:
-            output, label = self.cache[idx]
+        if self.cache_enabled and idx_utf in self.cache:
+            output, label = self.cache[idx_utf]
         else:
             images, label = self.data[idx]
             frame_1_path, frame_2_path = images
@@ -163,19 +165,23 @@ class OpticalFlowDataset(Dataset):
             frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
             
             # perform transform and then convert back to numpy
+            # these transforms can be different between frames!
             if self.transform:
-                frame1 = torch.from_numpy(self.transform(TF.to_tensor(frame1)))
-                frame2 = torch.from_numpy(self.transform(TF.to_tensor(frame2)))
+                frame1 = self.transform(TF.to_tensor(frame1))
+                frame2 = self.transform(TF.to_tensor(frame2))
+            
+                frame1 = frame1.view(frame1.size(dim=1), frame1.size(dim=2))
+                frame2 = frame2.view(frame2.size(dim=1), frame2.size(dim=2))
+
             
             # now calculate optical flow
             # flow = torch.from_numpy(calc_optical_flow_dense(frame1, frame2))
-            flow = torch.from_numpy(cv2.calcOpticalFlowFarneback(frame1, frame2, None, 0.5, 3, 15, 3, 5, 1.2, 0))
-            frame2 = TF.to_tensor(cv2.cvtColor(frame2, cv2.IMREAD_GRAYSCALE))
+            flow = torch.from_numpy(cv2.calcOpticalFlowFarneback(frame1.numpy(), frame2.numpy(), None, 0.5, 3, 15, 3, 5, 1.2, 0))
 
-            output = torch.stack((frame2[0], flow[...,0], flow[...,1]), 0)
+            output = torch.stack((frame2, flow[...,0], flow[...,1]), 0)
             
             if self.cache_enabled:
-                self.cache[idx] = (output, label)
+                self.cache[idx_utf] = (output, label)
 
         if self.target_transform:
             label = self.target_transform(label)
