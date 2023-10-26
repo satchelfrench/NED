@@ -161,14 +161,17 @@ class OpticalFlowDataset(Dataset):
             frame1 = cv2.imread(frame_1_path, cv2.IMREAD_COLOR)
             frame2 = cv2.imread(frame_2_path, cv2.IMREAD_COLOR)
 
-            frame1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
-            frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
+            frame1 = TF.to_tensor(cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY))
+            frame2 = TF.to_tensor(cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY))
             
             # perform transform and then convert back to numpy
             # these transforms can be different between frames!
             if self.transform:
-                frame1 = self.transform(TF.to_tensor(frame1))
-                frame2 = self.transform(TF.to_tensor(frame2))
+                # stack frames as channels, transform, split
+                transformed = self.transform(torch.stack(frame1, frame2), 0)
+                
+                frame1 = transformed[0]
+                frame2 = transformed[1]
             
                 frame1 = frame1.view(frame1.size(dim=1), frame1.size(dim=2))
                 frame2 = frame2.view(frame2.size(dim=1), frame2.size(dim=2))
