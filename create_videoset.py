@@ -146,7 +146,7 @@ if __name__ == '__main__':
 
     else:   
         train_cases, valid_cases = split_prob(cases, args.split)
-        write_annotation_file(train_cases, valid_cases, "train_annotations.txt", "valid_annotatiosn.txt")
+        write_annotation_file(train_cases, valid_cases, "train_annotations.txt", "valid_annotations.txt")
     
     print("Complete!\nExiting..")
 
