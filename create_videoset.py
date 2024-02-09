@@ -1,5 +1,6 @@
 from datility.videoset import VideoDatasetBuilder, mergeDatasets
 from datility.structures import Case
+from sklearn.model_selection import KFold
 import os
 import argparse
 import random
@@ -19,7 +20,27 @@ def split_prob(arr, prob):
             train.append(sample)
         else:
             test.append(sample)
-    return train, test 
+    return train, test
+
+def write_annotation_file(train_cases, valid_cases, train_filename, valid_filename):
+    train_annotations_path = os.path.join(args.out_path, train_filename)
+    with open(train_annotations_path, "w") as train_labels:
+        train_merge_list = []
+        for case in train_cases:
+            train_merge_list.append(
+                tuple([case.src.split('/')[-1], os.path.join(case.out, "annotations.txt")])
+            )
+        train_labels.writelines(mergeDatasets(train_merge_list))
+
+    valid_annotations_path = os.path.join(args.out_path, valid_filename)
+    with open(valid_annotations_path, "w") as valid_labels:
+        valid_merge_list = []
+        for case in valid_cases:
+            valid_merge_list.append(
+                tuple([case.src.split('/')[-1], os.path.join(case.out, "annotations.txt")])
+            )
+        valid_labels.writelines(mergeDatasets(valid_merge_list))
+
 
 # # neonatal echocardiogram dataset (neo-echoset)
 if __name__ == '__main__':
@@ -46,6 +67,7 @@ if __name__ == '__main__':
                             [0.0 - 1.0], default=0.8")
     parser.add_argument("--label_file_name", default="labels.csv", type=str,
                         help="expected format of case label file (default to labels.csv)")
+    parser.add_argument("--kfold", default=1, type=int, help="number of folds for dataset")
 
     args = parser.parse_args()
 
@@ -102,24 +124,29 @@ if __name__ == '__main__':
 
     # Split Cases into train/val/test
     random.seed(args.seed)
-    train_cases, valid_cases = split_prob(cases, args.split)
+    
+    if args.kfold > 1:
+        # Do KFold
+        fold = KFold(args.kfold)
+        data_files = []
+        for i, (train_split, valid_split) in enumerate(fold.split(cases)):
+            train_cases = [cases[x] for x in train_split]
+            valid_cases = [cases[x] for x in valid_split]
+            train_file = f"train_annotations_{i}.txt"
+            valid_file = f"valid_annotations_{i}.txt"
+            data_files.append((train_file, valid_file))
+            write_annotation_file(train_cases, valid_cases, train_file, valid_file)
 
-    train_annotations_path = os.path.join(args.out_path, "train_annotations.txt")
-    with open(train_annotations_path, "w") as train_labels:
-        train_merge_list = []
-        for case in train_cases:
-            train_merge_list.append(
-                tuple([case.src.split('/')[-1], os.path.join(case.out, "annotations.txt")])
-            )
-        train_labels.writelines(mergeDatasets(train_merge_list))
+        print("Saving KFolded splits as json and pickle dump..")
+        with open("folded_data.txt", 'w') as foldedFile:
+            foldedFile.write(json.dumps(data_files))
 
-    valid_annotations_path = os.path.join(args.out_path, "valid_annotations.txt")
-    with open(valid_annotations_path, "w") as valid_labels:
-        valid_merge_list = []
-        for case in valid_cases:
-            valid_merge_list.append(
-                tuple([case.src.split('/')[-1], os.path.join(case.out, "annotations.txt")])
-            )
-        valid_labels.writelines(mergeDatasets(valid_merge_list))
+        with open("folded_data.pkl", 'wb') as foldedPkl:
+            foldedPkl.write(pickle.dumps(data_files))
 
+    else:   
+        train_cases, valid_cases = split_prob(cases, args.split)
+        write_annotation_file(train_cases, valid_cases, "train_annotations.txt", "valid_annotatiosn.txt")
+    
     print("Complete!\nExiting..")
+

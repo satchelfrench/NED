@@ -168,7 +168,7 @@ class OpticalFlowDataset(Dataset):
             # these transforms can be different between frames!
             if self.transform:
                 # stack frames as channels, transform, split
-                transformed = self.transform(torch.stack((frame1, frame2), 0))
+                transformed = torch.div(self.transform(torch.stack((frame1, frame2), 0)), 224)
 
                 frame1 = transformed[0]
                 frame2 = transformed[1]
