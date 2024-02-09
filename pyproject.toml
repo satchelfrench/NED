@@ -17,6 +17,7 @@ torch = "^2.0.1"
 torchvision = "^0.15.2"
 pandas = "^2.1.0"
 opencv-python = "^4.8.1.78"
+scikit-learn = "^1.4.0"
 
 [build-system]
 requires = ["poetry-core"]
