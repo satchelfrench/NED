@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
     # Format all source cases into named tuples  
     args.data_path = os.path.join(args.data_path, "echos_video") # removable when fixing s3 file
-    dirs = filter(lambda x: os.path.isdir(os.path.join(args.data_path, x)), os.listdir(args.data_path))
+    dirs = filter(lambda x: os.path.isdir(os.path.join(args.data_path, x)), sorted(os.listdir(args.data_path)))
 
     cases = list()
     for dir in dirs:
@@ -109,18 +109,18 @@ if __name__ == '__main__':
     # run check and install backends
     VideoDatasetBuilder.setup()
 
-    print("Building dataset..")
-    for case in tqdm(cases):
-        ds = VideoDatasetBuilder(case.src, case.labels, case.out)
-        ds.build()
+    # print("Building dataset..")
+    # for case in tqdm(cases):
+    #     ds = VideoDatasetBuilder(case.src, case.labels, case.out)
+    #     ds.build()
 
-    # Save Class Map
-    print("Saving class map as json and pickle dump..")
-    with open("classes.txt", 'w') as classFile:
-        classFile.write(json.dumps(ds._get_class_map()))
+    # # Save Class Map
+    # print("Saving class map as json and pickle dump..")
+    # with open("classes.txt", 'w') as classFile:
+    #     classFile.write(json.dumps(ds._get_class_map()))
 
-    with open("classes.pkl", 'wb') as classPkl:
-        classPkl.write(pickle.dumps(ds._get_class_map()))
+    # with open("classes.pkl", 'wb') as classPkl:
+    #     classPkl.write(pickle.dumps(ds._get_class_map()))
 
     # Split Cases into train/val/test
     random.seed(args.seed)
@@ -136,6 +136,9 @@ if __name__ == '__main__':
             valid_file = f"valid_annotations_{i}.txt"
             data_files.append((train_file, valid_file))
             write_annotation_file(train_cases, valid_cases, train_file, valid_file)
+            
+            x = [case.out.split('/')[-1] for case in valid_cases]
+            print(x)
 
         print("Saving KFolded splits as json and pickle dump..")
         with open("folded_data.txt", 'w') as foldedFile:
