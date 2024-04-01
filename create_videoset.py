@@ -127,7 +127,7 @@ if __name__ == '__main__':
     
     if args.kfold > 1:
         # Do KFold
-        fold = KFold(args.kfold)
+        fold = KFold(args.kfold, shuffle=True, random_state=args.seed)
         data_files = []
         for i, (train_split, valid_split) in enumerate(fold.split(cases)):
             train_cases = [cases[x] for x in train_split]
