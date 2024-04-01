@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
     # Format all source cases into named tuples  
     args.data_path = os.path.join(args.data_path, "echos_video") # removable when fixing s3 file
-    dirs = filter(lambda x: os.path.isdir(os.path.join(args.data_path, x)), os.listdir(args.data_path))
+    dirs = filter(lambda x: os.path.isdir(os.path.join(args.data_path, x)), sorted(os.listdir(args.data_path)))
 
     cases = list()
     for dir in dirs:
