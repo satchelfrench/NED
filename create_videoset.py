@@ -69,7 +69,13 @@ if __name__ == '__main__':
                         help="expected format of case label file (default to labels.csv)")
     parser.add_argument("--kfold", default=1, type=int, help="number of folds for dataset")
 
+    parser.add_argument('--ned16', type='store_true',
+                        help="path to raw data, argument is absolute path.")
+    
     args = parser.parse_args()
+
+    if args.ned16:
+        default_download_url = 'https://sagemaker-studio-685595588466-uuryx8ysrkm.s3.us-west-1.amazonaws.com/echo_videos_ext.tar.gz'
 
     # validate arguments
     if args.split > 1.0 or args.split < 0.0:
