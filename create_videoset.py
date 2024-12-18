@@ -76,6 +76,7 @@ if __name__ == '__main__':
 
     if args.ext:
         default_download_url = 'https://sagemaker-studio-685595588466-uuryx8ysrkm.s3.us-west-1.amazonaws.com/echo_videos_ext.tar.gz'
+        print("Using extended dataset.")
 
     # validate arguments
     if args.split > 1.0 or args.split < 0.0:
