@@ -20,6 +20,7 @@ A direct download of organized scans can be downloaded below, however we have cr
 
 💾 Download Dataset [Here](https://sagemaker-studio-685595588466-uuryx8ysrkm.s3.us-west-1.amazonaws.com/echo_videos.tar.gz)
 
+For access to raw dataset and original annotations please contact: n77khan@torontomu.ca
 
 <img src="https://github.com/user-attachments/assets/27ffedc7-2f17-4dae-b1d1-08e44098f8ce" width="400"/>
 
