@@ -36,13 +36,13 @@ Download Dataset [Here](https://sagemaker-studio-685595588466-uuryx8ysrkm.s3.us-
 
 ## 📁 Repository Structure
 
-NED/ 
-├── dataloaders/ # PyTorch dataloaders for NED 
-├── datility/ # Utility scripts for data processing 
-├── notebooks/ # Training & evaluation notebooks 
-├── balance.py # Dataset balancing utility 
-├── create_flowset.py # Create flow-based dataset 
-├── create_videoset.py # Create video-based dataset
+NED/ <br />
+├── dataloaders/ # PyTorch dataloaders for NED <br />
+├── datility/ # Utility scripts for data processing <br />
+├── notebooks/ # Training & evaluation notebooks <br />
+├── balance.py # Dataset balancing utility <br />
+├── create_flowset.py # Create flow-based dataset <br />
+├── create_videoset.py # Create video-based dataset<br />
 
 ---
 
