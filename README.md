@@ -2,7 +2,7 @@
 
 Welcome to the repository for the **Neonatal Echocardiographic Dataset (NED)**. This repository provides tools and scripts to facilitate the use of NED, a professionally annotated dataset designed to advance research in neonatal echocardiography.
 
-The code in this repo is meant to accompany our paper ![Temporal Feature Weaving for Neonatal Echocardiographic Viewpoint Video Classification](https://arxiv.org/abs/2501.03967) accepted at ![ISBI 2025](https://biomedicalimaging.org/2025/).
+The code in this repo is meant to accompany our paper [Temporal Feature Weaving for Neonatal Echocardiographic Viewpoint Video Classification](https://arxiv.org/abs/2501.03967) accepted at [ISBI 2025](https://biomedicalimaging.org/2025/).
 
 ## 🩺 Overview
 
